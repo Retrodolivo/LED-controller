@@ -1,0 +1,7 @@
+#Software
+Software/MCU/LED controller/MDK-ARM/DebugConfig/
+Software/MCU/LED controller/MDK-ARM/TX_stm32f030f4/
+Software/MCU/LED controller/MDK-ARM/*.uvoptx
+Software/MCU/LED controller/MDK-ARM/*.User
+Software/MCU/LED controller/MDK-ARM/*.scvd
+Software/MCU/LED controller/MDK-ARM/*.lst
