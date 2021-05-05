@@ -4,6 +4,11 @@
 extern Color_t color_rx;
 extern Color_t color_none;
 
+extern RTC_HandleTypeDef hrtc;
+RTC_TimeTypeDef sTime = {0};
+RTC_DateTypeDef DateToUpdate = {0};
+RTC_AlarmTypeDef sAlarm = {0};
+
 void VCP_init(vcp_t *vcp)
 {
 	/*fill vcp struct*/
@@ -46,6 +51,26 @@ void vcp_rx_parse(vcp_t *vcp, uint8_t *rx_byte)
 			set_color(color_rx, 1);
 			CDC_Transmit_FS((uint8_t *)vcp->cmd[2], strlen(vcp->cmd[2]));
 		}
+		if(vcp->rx_data[0] == vcp->cmd[3][0])
+		{
+			DateToUpdate.Year = vcp->rx_data[1];
+			DateToUpdate.Month = vcp->rx_data[2];
+			DateToUpdate.Date = vcp->rx_data[3];
+			sTime.Hours = vcp->rx_data[4];
+			sTime.Minutes = vcp->rx_data[5];
+			sTime.Seconds = vcp->rx_data[6];
+			
+			HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN);
+			HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN);
+			CDC_Transmit_FS((uint8_t *)vcp->cmd[3], strlen(vcp->cmd[3]));			
+		}
+		if(vcp->rx_data[0] == vcp->cmd[4][0])
+		{
+			
+			
+			CDC_Transmit_FS((uint8_t *)vcp->cmd[4], strlen(vcp->cmd[4]));	
+		}
+		
 		for(uint8_t i = 0; i < vcp->rx_len; i++)
 			vcp->rx_data[i] = 0;
 		vcp->rx_len = 0;
