@@ -89,7 +89,7 @@ def set_color(com, color):
         tx_data = 'C' + chr(red.get()) + chr(green.get()) + chr(blue.get()) + '~'
         print(tx_data)
         for byte in tx_data:
-            com['ser'].write(bytearray(byte, 'utf-8'))
+            com['ser'].write(bytearray(byte, 'iso8859-1'))
 
 #--------Connection--------------#
 connection_lframe = tk.LabelFrame(win, text = "Connection", font = "Arial 10",
