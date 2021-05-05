@@ -1,6 +1,6 @@
 #Software
 Software/MCU/LED controller/MDK-ARM/DebugConfig/
-Software/MCU/LED controller/MDK-ARM**/LED controller/
+Software/MCU/LED controller/MDK-ARM/LED\ controller/
 Software/MCU/LED controller/MDK-ARM/*.uvoptx
 Software/MCU/LED controller/MDK-ARM/*.User
 Software/MCU/LED controller/MDK-ARM/*.scvd
