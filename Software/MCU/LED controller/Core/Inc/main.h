@@ -36,6 +36,7 @@ extern "C" {
 
 #include "led.h"
 #include "bluetooth.h"
+#include "vcp.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

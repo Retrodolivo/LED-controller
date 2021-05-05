@@ -19,10 +19,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,6 +53,9 @@ enum Current_color
 {
 	Red, Green, Blue
 } current_color;
+
+vcp_t vcp;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,22 +70,18 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-Color_t pink = 				{255, 0, 246};
-Color_t yellow = 			{255, 255, 0};
-Color_t color_none = 	{0, 0, 0};
-Color_t color_rx = 		{0, 0, 0};
+Color_t color_rx = 		{.red = 0, .green = 0, .blue = 0};
 
-float brightness = 0.5;
-uint8_t i = 0;
+float brightness = 1;
+uint8_t i, j = 0;
 
 const uint8_t BT_buff_size = 1;
 char BT_buff[BT_buff_size] = {0};
 char BT_str_temp[5] = {0};
 
-
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 {
-	set_color(yellow, brightness);
+	set_color(color_rx, brightness);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -94,9 +94,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			i++;			
 		}
 		if(BT_buff[0] == 'N')
-			set_color(pink, brightness);		
+			set_color(color_rx, brightness);		
 		if(BT_buff[0] == 'F')
-			set_color(color_none, brightness);
+			set_color(color_rx, 0);
 		if(BT_buff[0] == '.' || (BT_buff[0] == ')' && current_color == Blue))
 		{
 			switch(current_color)
@@ -146,7 +146,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 					break;
 			}
 		}			
-		BT_start_listen(&huart1, BT_buff, BT_buff_size);
+		BT_listen(&huart1, BT_buff, BT_buff_size);
 	}
 } 
 
@@ -183,10 +183,11 @@ int main(void)
   MX_TIM2_Init();
   MX_RTC_Init();
   MX_USART1_UART_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 	pwm_init();
-	BT_start_listen(&huart1, BT_buff, BT_buff_size);
-
+	BT_listen(&huart1, BT_buff, BT_buff_size);
+	VCP_init(&vcp);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -194,9 +195,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+		
     /* USER CODE BEGIN 3 */
-  }
+	}
   /* USER CODE END 3 */
 }
 
@@ -238,8 +239,9 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_RTC|RCC_PERIPHCLK_USB;
   PeriphClkInit.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+  PeriphClkInit.UsbClockSelection = RCC_USBCLKSOURCE_PLL;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();
@@ -430,6 +432,11 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+void CDC_ReceiveCallBack(uint8_t *buf, uint32_t len)
+{
+	vcp_rx_parse(&vcp, buf);
+}
 
 /* USER CODE END 4 */
 
