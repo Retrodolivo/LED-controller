@@ -4,7 +4,6 @@ import serial.tools.list_ports
 for port in serial.tools.list_ports.comports():
     print(port.vid + port.pid)
 '''
-
 import sys
 import glob
 
@@ -15,8 +14,10 @@ from functools import partial
 from datetime import datetime
 
 win = tk.Tk()
-win.geometry("350x300")
+win.geometry("400x300")
+#win.resizable(width=False, height=False)
 win.title("RGB LED Control Panel")
+win.configure(background='pink')
 
 com = {'ser': 0, 'is_found': False, 'cmd_stop_byte': '~'}
 color = {'red': 0, 'green': 0, 'blue': 0}
@@ -35,6 +36,7 @@ def init(com):
         OFF_hour_combobox["state"] = "disabled"
         OFF_min_combobox["state"] = "disabled"
         Scheduler_btn["state"] = "disabled"
+        brightness_slide.set(100)    
   
 def serial_ports():
     if sys.platform.startswith('win'):
@@ -69,8 +71,7 @@ def hookup(com):
        ON_min_combobox["state"] = "disabled"
        OFF_hour_combobox["state"] = "disabled"
        OFF_min_combobox["state"] = "disabled"
-       Scheduler_btn["state"] = "disabled"
-       
+       Scheduler_btn["state"] = "disabled"  
     else:
         com['ser'] = serial.Serial(com_combobox.get())
         if com['ser'].is_open:
@@ -109,6 +110,13 @@ def set_color(com, color):
         for byte in tx_data:
             com['ser'].write(bytearray(byte, 'iso8859-1'))
 
+def set_brightness(com, color):
+    if com['is_found']:
+       tx_data = 'B' + chr(brightness.get()) + com['cmd_stop_byte']
+       print(tx_data)
+       for byte in tx_data:
+           com['ser'].write(bytearray(byte, 'utf-8'))
+
 def send_sys_time():
     if com['is_found']:
         tx_data = 'T' + (chr(dt.year % 2000) + chr(dt.month) + chr(dt.day) +
@@ -118,7 +126,7 @@ def send_sys_time():
         for byte in tx_data:
             com['ser'].write(bytearray(byte, 'utf-8'))
 
-def launch_scheduler():
+def launch_scheduler(com):
     if com['is_found']:
         tx_data = 'A' + (chr(int(ON_hour_combobox.get())) + chr(int(ON_min_combobox.get())) +
                         com['cmd_stop_byte'])
@@ -176,6 +184,17 @@ color_green_slide.grid(in_ = color_lframe, row = 1, column = 1, pady = 3, padx =
 color_blue_slide = tk.Scale(color_lframe, font = "Arial 10 bold", orient = tk.HORIZONTAL,
                      from_ = 0, to_ = 255, resolution = 1, variable = blue, command = partial(set_color, com))
 color_blue_slide.grid(in_ = color_lframe, row = 2, column = 1, pady = 3, padx = 3)
+#--------Brightness----------------#
+brightness = tk.IntVar()
+
+brightness_slide = tk.Scale(win, font = "Arial 10 bold", orient = tk.VERTICAL,
+                     from_ = 100, to_ = 0, resolution = 1, variable = brightness, command = partial(set_brightness, com))
+brightness_slide.place(relx = 0.85, rely = 0.5)
+
+img = tk.PhotoImage(file = r"C:\Users\User\Desktop\LED-controller\Software\Python_App\img\brightness.png")
+img = img.subsample(7)
+brigh_lbl = tk.Label(win, image = img)
+brigh_lbl.place(relx = 0.895, rely = 0.35)
 #--------Scheduler-----------------#
 Scheduler_lframe = tk.LabelFrame(win, text = "Scheduler", font = "Arial 10", width = 200, height = 100)
 Scheduler_lframe.grid(row = 1, column = 0, pady = 10, padx = 10)
@@ -199,7 +218,7 @@ OFF_hour_combobox.grid(row = 1, column = 1, pady = 5, padx = 5)
 OFF_min_combobox = ttk.Combobox(Scheduler_lframe, values = time['min'], width = 3)
 OFF_min_combobox.grid(row = 1, column = 2, pady = 5, padx = 5)
 
-Scheduler_btn = tk.Button(text = "Launch", font = "Arial 10", command = launch_scheduler())
+Scheduler_btn = tk.Button(text = "Launch", font = "Arial 10", command = partial(launch_scheduler, com))
 Scheduler_btn.grid(in_ = Scheduler_lframe, pady = 3, padx = 3)
 Scheduler_btn.bind("<Button-1>")
 
