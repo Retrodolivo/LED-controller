@@ -3,6 +3,18 @@
 
 #include "main.h"
 
-void BT_listen(UART_HandleTypeDef *huart1, char *BT_buff, uint8_t buff_size);
+#define RX_SIZE		1
+#define BUFF_SIZE	5
+
+typedef struct
+{
+	char rx_data[RX_SIZE];
+	char buff[BUFF_SIZE];
+	uint8_t rx_len;
+} bluetooth_t;
+
+
+void BT_listen(UART_HandleTypeDef *huart1, bluetooth_t *bt);
+void bt_rx_parse(bluetooth_t *bt);
 
 #endif /*_BLUETOOTH_H_*/

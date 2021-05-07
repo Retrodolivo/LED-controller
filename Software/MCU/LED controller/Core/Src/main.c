@@ -49,13 +49,11 @@ TIM_HandleTypeDef htim2;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-enum Current_color
-{
-	Red, Green, Blue
-} current_color;
 
 vcp_t vcp;
+bluetooth_t bt;
 
+extern Color_t color_rx;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,83 +68,19 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-Color_t color_rx = 		{.red = 0, .green = 0, .blue = 0};
 
-float brightness = 1;
-uint8_t i, j = 0;
-
-const uint8_t BT_buff_size = 1;
-char BT_buff[BT_buff_size] = {0};
-char BT_str_temp[5] = {0};
 
 void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 {
-	set_color(color_rx, brightness);
+	color_rx.brightness = 0;
+	set_color(color_rx);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart == &huart1)
 	{
-		if(BT_buff[0] >= '0' && BT_buff[0] <= '9')
-		{
-			BT_str_temp[i] = BT_buff[0];
-			i++;			
-		}
-		if(BT_buff[0] == 'N')
-			set_color(color_rx, brightness);		
-		if(BT_buff[0] == 'F')
-			set_color(color_rx, 0);
-		if(BT_buff[0] == '.' || (BT_buff[0] == ')' && current_color == Blue))
-		{
-			switch(current_color)
-			{
-				case Red:
-					for(uint8_t j = i; j != 0; j--)
-					{
-						if(j == 3)
-							color_rx.red += (BT_str_temp[i - j] - '0') * 100;
-						if(j == 2)
-							color_rx.red += (BT_str_temp[i - j] - '0') * 10;
-						if(j == 1)
-							color_rx.red += BT_str_temp[i - j] - '0';	
-					}
-					i = 0;
-					current_color = Green;
-					break;
-					
-				case Green:
-					for(uint8_t j = i; j != 0; j--)
-					{
-						if(j == 3)
-							color_rx.green += (BT_str_temp[i - j] - '0') * 100;
-						if(j == 2)
-							color_rx.green += (BT_str_temp[i - j] - '0') * 10;
-						if(j == 1)
-							color_rx.green += BT_str_temp[i - j] - '0';	
-					}
-					i = 0;
-					current_color = Blue;
-					break;
-					
-				case Blue:
-					for(uint8_t j = i; j != 0; j--)
-					{
-						if(j == 3)
-							color_rx.blue += (BT_str_temp[i - j] - '0') * 100;
-						if(j == 2)
-							color_rx.blue += (BT_str_temp[i - j] - '0') * 10;
-						if(j == 1)
-							color_rx.blue += BT_str_temp[i - j] - '0';	
-					}
-					set_color(color_rx, brightness);
-					color_rx.red = color_rx.green = color_rx.blue = 0;
-					i = 0;
-					current_color = Red;
-					break;
-			}
-		}			
-		BT_listen(&huart1, BT_buff, BT_buff_size);
+		bt_rx_parse(&bt);
 	}
 } 
 
@@ -186,7 +120,7 @@ int main(void)
   MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
 	pwm_init();
-	BT_listen(&huart1, BT_buff, BT_buff_size);
+	BT_listen(&huart1, &bt);
 	VCP_init(&vcp);
   /* USER CODE END 2 */
 

@@ -5,11 +5,12 @@
 
 typedef struct
 {
-	uint8_t red, green, blue;	
+	uint8_t red, green, blue;
+	float brightness;
 } Color_t;
 
 
 void pwm_init(void);
-void set_color(Color_t color, float brightness);
+void set_color(Color_t color);
 
 #endif /*_LED_H_*/

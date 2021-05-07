@@ -13,10 +13,10 @@ void pwm_init(void)
 	TIM2->CCR3 = 0;
 }
 
-void set_color(Color_t color, float brightness)
+void set_color(Color_t color)
 {
-	TIM2->CCR1 = color.red * brightness;
-	TIM2->CCR2 = color.green * brightness;
-	TIM2->CCR3 = color.blue * brightness;
+	TIM2->CCR1 = color.red * color.brightness;
+	TIM2->CCR2 = color.green * color.brightness;
+	TIM2->CCR3 = color.blue * color.brightness;
 }
 
