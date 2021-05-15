@@ -1,7 +1,17 @@
 #Software
-Software/MCU/LED controller/MDK-ARM/DebugConfig/
-Software/MCU/LED controller/MDK-ARM/LED\ controller/
-Software/MCU/LED controller/MDK-ARM/*.uvoptx
-Software/MCU/LED controller/MDK-ARM/*.User
-Software/MCU/LED controller/MDK-ARM/*.scvd
-Software/MCU/LED controller/MDK-ARM/*.lst
+Software/MCU/LED\ controller/MDK-ARM/DebugConfig/
+Software/MCU/LED\ controller/MDK-ARM/LED\ controller/
+Software/MCU/LED\ controller/MDK-ARM/*.uvoptx
+Software/MCU/LED\ controller/MDK-ARM/*.User
+Software/MCU/LED\ controller/MDK-ARM/*.scvd
+Software/MCU/LED\ controller/MDK-ARM/*.lst
+
+Software/Python_App/__pycache__/
+Software/Python_App/build/
+Software/Python_App/pyLed.spec
+
+#Hardware
+Hardware/LED_controller/History/
+Hardware/LED_controller/Project Logs for LED_controller/
+Hardware/LED_controller/Project Outputs for LED_controller/
+Hardware/LED_controller/CNC/
