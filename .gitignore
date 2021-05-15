@@ -2,6 +2,7 @@
 Software/MCU/LED controller/MDK-ARM/DebugConfig/
 Software/MCU/LED controller/MDK-ARM/LED controller/
 Software/MCU/LED controller/MDK-ARM/*.scvd
+Software/MCU/LED controller/MDK-ARM/*.User
 
 Software/Python_App/__pycache__/
 Software/Python_App/build/
