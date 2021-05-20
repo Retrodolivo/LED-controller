@@ -48,6 +48,8 @@ TIM_HandleTypeDef htim2;
 
 UART_HandleTypeDef huart1;
 
+extern RTC_AlarmTypeDef sAlarm;
+
 /* USER CODE BEGIN PV */
 
 vcp_t vcp;
@@ -74,6 +76,7 @@ void HAL_RTC_AlarmAEventCallback(RTC_HandleTypeDef *hrtc)
 {
 	color_rx.brightness = 0;
 	set_color(color_rx);
+	HAL_RTC_SetAlarm_IT(hrtc, &sAlarm, RTC_FORMAT_BIN);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -196,7 +199,6 @@ static void MX_RTC_Init(void)
 
   RTC_TimeTypeDef sTime = {0};
   RTC_DateTypeDef DateToUpdate = {0};
-  RTC_AlarmTypeDef sAlarm = {0};
 
   /* USER CODE BEGIN RTC_Init 1 */
 
@@ -231,16 +233,6 @@ static void MX_RTC_Init(void)
   DateToUpdate.Year = 0;
 
   if (HAL_RTC_SetDate(&hrtc, &DateToUpdate, RTC_FORMAT_BIN) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /** Enable the Alarm A
-  */
-  sAlarm.AlarmTime.Hours = 0;
-  sAlarm.AlarmTime.Minutes = 0;
-  sAlarm.AlarmTime.Seconds = 0;
-  sAlarm.Alarm = RTC_ALARM_A;
-  if (HAL_RTC_SetAlarm(&hrtc, &sAlarm, RTC_FORMAT_BIN) != HAL_OK)
   {
     Error_Handler();
   }
